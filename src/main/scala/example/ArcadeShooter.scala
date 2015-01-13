@@ -3,6 +3,7 @@ package example
 // TODO: Refactor into multiple files
 // TODO: Add method to World class that introduces citizens into world
 // TODO: Add collision detection. (keep separate list of bullets and enemies?)
+// TODO: Add infobars (ammo, lives, etc.)
 
 import scalajs.js
 import org.scalajs.dom
@@ -237,7 +238,7 @@ class World(_citizens: List[Citizen]) {
 
 
 @JSExport
-object StickMan {
+object ArcadeShooter {
 
   @JSExport
   def main(canvas: dom.HTMLCanvasElement): Unit = {

@@ -57,11 +57,11 @@ class Ball(_r: Int, _x: Int, _y: Int, _vx: Int, _vy: Int) {
 
   // This model prevents "eternal jiggle"
   private def reflectX(f: Double): Unit = {
-    vx = -((f * vx - 0.3).toInt)
+    vx = -(f * vx - 0.3).toInt
   }
 
   private def reflectY(f: Double): Unit = {
-    vy = -((f * vy - 0.3).toInt)
+    vy = -(f * vy - 0.3).toInt
   }
 
   // Moves the given number of time steps
@@ -113,7 +113,7 @@ object Ball {
 
   def generate(n: Int): List[Ball] = {
     var result: List[Ball] = List()
-    for (i <- 1 to n) result = (new Ball(10, 250, 250, Random.nextInt(10), Random.nextInt(10))) :: result
+    for (i <- 1 to n) result = new Ball(10, 250, 250, Random.nextInt(10), Random.nextInt(10)) :: result
     result
   }
 
@@ -158,12 +158,12 @@ object WallBounce {
         renderer.beginPath()
         renderer.lineWidth = 0
         renderer.fillStyle = "blue"
-        renderer.arc(b.x, b.y, b.r, b.initAngle, b.initAngle + math.Pi, false)
+        renderer.arc(b.x, b.y, b.r, b.initAngle, b.initAngle + math.Pi, anticlockwise = false)
         renderer.fill()
         renderer.beginPath()
         renderer.lineWidth = 0
         renderer.fillStyle = "blue"
-        renderer.arc(b.x, b.y, b.r, b.initAngle + 0.5 * math.Pi, b.initAngle + 1.5 * math.Pi, false)
+        renderer.arc(b.x, b.y, b.r, b.initAngle + 0.5 * math.Pi, b.initAngle + 1.5 * math.Pi, anticlockwise = false)
         renderer.fill()
 
         //renderer.arc(b.x, b.y, b.r, b.initAngle, b.initAngle + 2 * math.Pi)

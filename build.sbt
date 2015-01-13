@@ -17,5 +17,5 @@ libraryDependencies ++= Seq(
 
 bootSnippet := "ArcadeShooter.main(document.getElementById('canvas'));"
 
-updateBrowsers <<= updateBrowsers.triggeredBy(ScalaJSKeys.fastOptJS in Compile)
+refreshBrowsers <<= refreshBrowsers.triggeredBy(ScalaJSKeys.fastOptJS in Compile)
 
