@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules.scalajs" %%% "scalajs-dom" % "0.6"
 )
 
-bootSnippet := "ArcadeShooter.main(document.getElementById('canvas'));"
+bootSnippet := "Application.main(document.getElementById('canvas'));"
 
 refreshBrowsers <<= refreshBrowsers.triggeredBy(ScalaJSKeys.fastOptJS in Compile)
 

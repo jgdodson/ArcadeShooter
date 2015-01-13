@@ -1,7 +1,7 @@
-package example
+package wallBounce
 
-import scalajs.js
 import org.scalajs.dom
+
 import scala.scalajs.js.annotation.JSExport
 import scala.util.Random
 
