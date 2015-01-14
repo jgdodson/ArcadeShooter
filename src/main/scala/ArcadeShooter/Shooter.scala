@@ -1,8 +1,6 @@
 package ArcadeShooter
 
-/**
- * Created by JordanDodson on 1/13/15.
- */
+
 // Might not need a class for this anymore, since all citizens have a spawn method.
 // Instead, have an object that contains a collection of different style shooters.
 class Shooter extends Walker(8, 50, 30) {

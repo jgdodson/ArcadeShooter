@@ -12,9 +12,7 @@ import scala.scalajs.js.annotation.JSExport
 // TODO: Tweak collision detection.
 // TODO: Add infobars (ammo, lives, etc.)
 
-/**
- * Created by JordanDodson on 1/13/15.
- */
+
 @JSExport
 object Application {
 

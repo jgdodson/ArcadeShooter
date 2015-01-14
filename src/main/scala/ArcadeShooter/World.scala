@@ -2,52 +2,50 @@ package ArcadeShooter
 
 import org.scalajs.dom
 
-/**
- * Created by JordanDodson on 1/13/15.
- */
+
+// List for all spawners, then pattern match to determine where the spawn will go.
+
+// TODO: The next generation consists ONLY of spawn (wouldn't need vars!)
+//  Variables result from mangling time. To still use variables, one could
+//  enforce epochs that allow at most one update at a time.
+
 class World() {
 
-
-  // (shooters, bullets, enemies)
   var shooters: List[Shooter] = Nil
   var bullets: List[Bullet] = Nil
   var enemies: List[Enemy] = Nil
 
+  // Introduces a new Enemy to the world.
   def addEnemy(e: Enemy): Unit = {
     enemies = e :: enemies
   }
 
+  // Introduces a new Shooter to the world.
   def addShooter(s: Shooter): Unit = {
     shooters = s :: shooters
   }
 
 
-  // Checks for Bullet/Enemy collisions and annihilates accordingly.
-  def CheckCollisions(b: List[Bullet], e: List[Enemy]): (List[Bullet], List[Enemy]) = {
+  // Allows a single bullet to kill multiple enemies and
+  // (in future?) multiple bullets to kill a single enemy.
+  def CheckCollisions(bs: List[Bullet], es: List[Enemy]): (List[Bullet], List[Enemy]) = {
 
-    def loop1(b: Bullet, rem: List[Enemy], acc: List[Enemy], hit: Boolean): (List[Bullet], List[Enemy]) = {
-      if (hit) (Nil, rem ::: acc)
-      else rem match {
-        case fe :: rest =>
-          if (b.isNear(fe.x, fe.y, fe.r)) loop1(b, rest, acc, true)
-          else loop1(b, rest, fe :: acc, false)
-
-        case Nil => (List(b), acc)
-      }
+    // Checks one bullet against a list of enemies.
+    def loop1(b: Bullet, es: List[Enemy]): (List[Bullet], List[Enemy]) = {
+      val (hits, misses) = es partition { enemy => b isNear enemy}
+      if (hits.isEmpty) (List(b), misses)
+      else (Nil, misses)
     }
 
-    def loop2(bs: List[Bullet], e: List[Enemy], ab: List[Bullet]): (List[Bullet], List[Enemy]) = {
-      bs match {
-        case fb :: rest =>
-          val (b, es) = loop1(fb, e, Nil, false)
-          loop2(rest, es, b ::: ab)
-
-        case Nil => (ab, e)
-      }
+    // Calls loop1 for all bullets.
+    def loop2(bs: List[Bullet], e: List[Enemy], remainingBul: List[Bullet]): (List[Bullet], List[Enemy]) = bs match {
+      case fb :: rest =>
+        val (b, es) = loop1(fb, e)
+        loop2(rest, es, b ::: remainingBul)
+      case Nil => (remainingBul, e)
     }
 
-    // Result
-    loop2(b, e, Nil)
+    loop2(bs, es, Nil)
   }
 
   def render(g: dom.CanvasRenderingContext2D): Unit = {

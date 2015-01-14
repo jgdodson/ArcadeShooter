@@ -5,9 +5,6 @@ import org.scalajs.dom
 import scala.scalajs.js.annotation.JSExport
 import scala.util.Random
 
-/**
- * Created by JordanDodson on 1/11/15.
- */
 
 class Ball(_r: Int, _x: Int, _y: Int, _vx: Int, _vy: Int) {
 
@@ -176,31 +173,25 @@ object WallBounce {
 
     canvas.onkeydown =
       (e: dom.KeyboardEvent) => e.keyCode match {
-        case 0x26 => {
-          for (b <- balls) b.vy -= 2
-        }
-        case 0x25 => {
-          for (b <- balls) b.vx -= 2
-        }
-        case 0x27 => {
-          for (b <- balls) b.vx += 2
-        }
-        case 40 => {
-          for (b <- balls) b.vy += 2
-        }
-        case 82 => {
-          for (b <- balls) b.rotRate += 0.1
-        }
-        case 69 => {
-          for (b <- balls) b.rotRate -= 0.1
-        }
+        case 0x26 => for (b <- balls) b.vy -= 2
+
+        case 0x25 => for (b <- balls) b.vx -= 2
+
+        case 0x27 => for (b <- balls) b.vx += 2
+
+        case 40 => for (b <- balls) b.vy += 2
+
+        case 82 => for (b <- balls) b.rotRate += 0.1
+
+        case 69 => for (b <- balls) b.rotRate -= 0.1
+
         // "P" scatters the balls
-        case 80 => {
+        case 80 =>
           for (b <- balls) {
             b.vx = math.pow(-1, Random.nextInt(2)).toInt * Random.nextInt(5)
             b.vy = math.pow(-1, Random.nextInt(2)).toInt * Random.nextInt(5)
           }
-        }
+
 
       }
   }

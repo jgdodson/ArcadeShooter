@@ -3,12 +3,12 @@ package ArcadeShooter
 import org.scalajs.dom
 import scala.util.Random
 
-/**
- * Created by JordanDodson on 1/13/15.
- */
 class Enemy() extends Citizen {
 
   val r: Int = 20
+
+  val width: Int = r
+  val length: Int = r
 
   var x: Int = Random.nextInt(500)
   var y: Int = 0
@@ -18,13 +18,6 @@ class Enemy() extends Citizen {
 
   def expired(): Boolean = {
     x < 0 || y < 0 || x > 500 || y > 500
-  }
-
-  def spawn(): List[Citizen] = Nil
-
-  def update(): Unit = {
-    x += vx
-    y += vy
   }
 
   def render(g: dom.CanvasRenderingContext2D): Unit = {

@@ -2,11 +2,8 @@ package ArcadeShooter
 
 import org.scalajs.dom
 
-/**
- * Created by JordanDodson on 1/13/15.
- */
-// for arcade-style games. (i.e. Galaga)
-// A walker is a user-controlled agent that walks across the bottom of the canvas. Used
+// For arcade-style games. (i.e. Galaga)
+// A walker is a user-controlled agent that walks across the bottom of the canvas.
 class Walker(_pace: Int, _length: Int, _width: Int) extends Citizen {
 
   // The length of the Walker in pixels.
@@ -24,6 +21,7 @@ class Walker(_pace: Int, _length: Int, _width: Int) extends Citizen {
 
   // Velocity
   var vx: Int = 0
+  val vy: Int = 0
 
   // Flags indicating the current state of the Walker.
   var movingRight: Boolean = false
@@ -77,7 +75,7 @@ class Walker(_pace: Int, _length: Int, _width: Int) extends Citizen {
   }
 
   // Idea: Use a "future stack" to handle effects that unfold over the coming frames.
-  def update(): Unit = {
+  override def update(): Unit = {
 
     // If we're stopping and moving, slowdown.
     if (stopping && math.abs(vx) > 0) reduceVel(1)
@@ -85,9 +83,6 @@ class Walker(_pace: Int, _length: Int, _width: Int) extends Citizen {
     // Update position
     x += vx
   }
-
-  // Walkers do not spawn anything.
-  def spawn(): List[Citizen] = Nil
 
   // never expires
   def expired(): Boolean = false
