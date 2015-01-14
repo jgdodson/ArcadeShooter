@@ -4,20 +4,14 @@ import org.scalajs.dom
 
 // For arcade-style games. (i.e. Galaga)
 // A walker is a user-controlled agent that walks across the bottom of the canvas.
-class Walker(_pace: Int, _length: Int, _width: Int) extends Citizen {
-
-  // The length of the Walker in pixels.
-  val length: Int = _length
-
-  // The width of the walker in pixels.
-  val width: Int = _width
+class Walker(_pace: Int, val halfLength: Int, val halfWidth: Int) extends Citizen {
 
   // Pace of the walker, that is, the velocity when walking left or right.
   val pace: Int = math.abs(_pace)
 
   // Position
   var x: Int = 250
-  var y: Int = 500 - (length / 2)
+  var y: Int = 500 - (halfLength)
 
   // Velocity
   var vx: Int = 0
@@ -90,7 +84,7 @@ class Walker(_pace: Int, _length: Int, _width: Int) extends Citizen {
   def render(g: dom.CanvasRenderingContext2D): Unit = {
     g.beginPath()
     g.fillStyle = "black"
-    g.fillRect(x - (width / 2), y - (length / 2), width, length)
+    g.fillRect(x - halfWidth, y - halfLength, 2 * halfWidth, 2 * halfLength)
 
   }
 }

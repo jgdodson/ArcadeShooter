@@ -1,7 +1,5 @@
 package ArcadeShooter
 
-import scala.util.Random
-
 import org.scalajs.dom
 
 import scala.scalajs.js.annotation.JSExport
@@ -18,51 +16,16 @@ object Application {
 
   @JSExport
   def main(canvas: dom.HTMLCanvasElement): Unit = {
-    val renderer = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
-    val size = 500
+    //dom.alert("Single Shot: W\n" + "TripleShot: E\n" + "Shockwave: Q")
 
-    canvas.tabIndex = 1000
-    canvas.width = size
-    canvas.height = size
-    canvas.style.outline = "none"
-
-    val wakka = new Shooter
-
-
-    // Idea: provide the world class with methods for adding citizens. This
+    // DONE: provide the world class with methods for adding citizens. This
     // will make it easier to inform the citizens of certain world-properties.
 
-    val world: World = new World()
-    world.addShooter(wakka)
-    world.addEnemy(new Enemy())
+    val world: World = new World(canvas, 500, 500)
+    world.addShooter()
 
-    def renderWorld(): Unit = {
-      renderer.clearRect(0, 0, size, size)
-
-      if (Random.nextInt(30) == 1) world.addEnemy(new Enemy())
-      world.render(renderer)
-      world.update()
-    }
-
-    dom.setInterval(renderWorld _, 20)
-
-    canvas.onkeydown = (e: dom.KeyboardEvent) => e.keyCode match {
-      // moving left/right
-      case 37 => wakka.startMovingLeft()
-      case 39 => wakka.startMovingRight()
-
-      // shooting commands
-      case 87 => wakka.fireSingle()
-      case 69 => wakka.fireTriple()
-      case 81 => wakka.shockWave()
-    }
-
-    canvas.onkeyup = (e: dom.KeyboardEvent) => e.keyCode match {
-      // moving left/right
-      case 37 => wakka.stopMovingLeft()
-      case 39 => wakka.stopMovingRight()
-    }
+    world.bigBang()
 
 
   }

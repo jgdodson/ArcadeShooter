@@ -12,8 +12,9 @@ import org.scalajs.dom
 
 trait Citizen {
 
-  val width: Int
-  val length: Int
+  // The half-width and the half-length.
+  val halfWidth: Int
+  val halfLength: Int
 
   var x: Int
   var y: Int
@@ -28,8 +29,8 @@ trait Citizen {
   def spawn(): List[Citizen] = Nil
 
   final def isNear(other: Citizen): Boolean = {
-    math.abs(x - other.x) < (width + other.width) &&
-    math.abs(y - other.y) < (length + other.length)
+    math.abs(x - other.x) < (halfWidth + other.halfWidth) &&
+    math.abs(y - other.y) < (halfLength + other.halfLength)
   }
 
   def update(): Unit = {

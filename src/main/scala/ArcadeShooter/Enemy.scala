@@ -3,12 +3,10 @@ package ArcadeShooter
 import org.scalajs.dom
 import scala.util.Random
 
-class Enemy() extends Citizen {
+class Enemy(r: Int) extends Citizen {
 
-  val r: Int = 20
-
-  val width: Int = r
-  val length: Int = r
+  val halfWidth: Int = r
+  val halfLength: Int = r
 
   var x: Int = Random.nextInt(500)
   var y: Int = 0
@@ -21,8 +19,18 @@ class Enemy() extends Citizen {
   }
 
   def render(g: dom.CanvasRenderingContext2D): Unit = {
-    g.beginPath()
+
     g.fillStyle = "red"
-    g.fillRect(x - (r / 2), y - (r / 2), r, r)
+    g.lineWidth = 3
+    g.strokeStyle = "silver"
+
+    g.beginPath()
+    g.moveTo(x - halfWidth,y - halfLength)
+    g.lineTo(x,y + halfWidth)
+    g.lineTo(x + halfWidth, y - halfLength)
+    g.closePath()
+
+    g.fill()
+    g.stroke()
   }
 }

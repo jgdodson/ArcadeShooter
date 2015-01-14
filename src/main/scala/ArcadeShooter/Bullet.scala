@@ -8,8 +8,8 @@ class Bullet(var x: Int,
              var vy: Int,
              r: Int) extends Citizen {
 
-  val length: Int = r
-  val width: Int = r
+  val halfLength: Int = r
+  val halfWidth: Int = r
 
   def expired(): Boolean = {
     (x < 0) || (y < 0) || (x > 500) || (y > 500)
