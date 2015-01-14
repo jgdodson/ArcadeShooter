@@ -2,8 +2,6 @@ package ArcadeShooter
 
 import org.scalajs.dom
 
-import scala.util.Random
-
 
 // TODO: List for all spawners, then pattern match to determine where the spawn will go.
 
@@ -21,11 +19,13 @@ import scala.util.Random
 class World(worldCanvas: dom.HTMLCanvasElement, worldWidth: Int, worldHeight: Int) {
 
   // Setup the Canvas
-  worldCanvas.tabIndex = 1000
+  worldCanvas.tabIndex = 0
   worldCanvas.style.outline = "none"
+  worldCanvas.focus()
   worldCanvas.width = worldWidth
   worldCanvas.height = worldHeight
 
+  // Setup key-controls for the canvas.
   worldCanvas.onkeydown = (e: dom.KeyboardEvent) => e.keyCode match {
     // moving left/right
     case 37 => shooters.map(s => s.startMovingLeft())
@@ -46,24 +46,29 @@ class World(worldCanvas: dom.HTMLCanvasElement, worldWidth: Int, worldHeight: In
 
   private val worldCTX = worldCanvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
-  var shooters: List[Shooter] = Nil
-  var bullets: List[Bullet] = Nil
-  var enemies: List[Enemy] = Nil
+  private var generators: List[Generator] = Nil
+  private var shooters: List[Shooter] = Nil
+  private var bullets: List[Bullet] = Nil
+  private var enemies: List[Enemy] = Nil
 
   // Introduces a new Enemy to the world.
   def addEnemy(r: Int): Unit = {
-    enemies = new Enemy(r) :: enemies
+    enemies = new Enemy(r, worldWidth, worldHeight) :: enemies
   }
 
   // Introduces a new Shooter to the world.
   def addShooter(): Unit = {
-    shooters = new Shooter() :: shooters
+    shooters = new Shooter(worldWidth, worldHeight) :: shooters
+  }
+
+  def addGenerator(freq: Int): Unit = {
+    generators = new Generator(freq, worldWidth, worldHeight) :: generators
   }
 
 
   // Allows a single bullet to kill multiple enemies and
   // (in future?) multiple bullets to kill a single enemy.
-  def CheckCollisions(bs: List[Bullet], es: List[Enemy]): (List[Bullet], List[Enemy]) = {
+  private def CheckCollisions(bs: List[Bullet], es: List[Enemy]): (List[Bullet], List[Enemy]) = {
 
     // Checks one bullet against a list of enemies.
     def loop1(b: Bullet, es: List[Enemy]): (List[Bullet], List[Enemy]) = {
@@ -84,7 +89,7 @@ class World(worldCanvas: dom.HTMLCanvasElement, worldWidth: Int, worldHeight: In
     loop2(bs, es, Nil)
   }
 
-  def render(): Unit = {
+  private def render(): Unit = {
 
     worldCTX.clearRect(0, 0, worldWidth, worldHeight)
 
@@ -96,9 +101,16 @@ class World(worldCanvas: dom.HTMLCanvasElement, worldWidth: Int, worldHeight: In
 
     // Render the shooters last (always on top).
     for (s <- shooters) s.render(worldCTX)
+
+    // Display the number of shots fired
+
+
+    worldCTX.font = "30px calibri"
+    worldCTX.fillStyle = "black"
+    worldCTX.fillText("Fired: " + shooters.headOption.map(s => s.numShotsFired).getOrElse(0).toString(),10,30)
   }
 
-  def update(): Unit = {
+  private def update(): Unit = {
 
     // Firstly, handle the collisions.
     // If handled last, after the updates, the collisions would
@@ -120,16 +132,19 @@ class World(worldCanvas: dom.HTMLCanvasElement, worldWidth: Int, worldHeight: In
       bullets = s.spawn() ::: bullets
     }
 
+    for (g <- generators) enemies = g.spawn() ::: enemies
+
   }
 
-  def bigBang(): Unit = {
+  def bigBang(t: Int): Unit = {
+
     def loop(): Unit = {
-      if (Random.nextInt(30) == 1) addEnemy(10)
       render()
       update()
     }
 
-    dom.setInterval(loop _, 20)
+    // Eta-expansion of method to function
+    dom.setInterval(loop _, t)
   }
 
 

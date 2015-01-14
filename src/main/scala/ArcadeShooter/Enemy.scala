@@ -3,19 +3,19 @@ package ArcadeShooter
 import org.scalajs.dom
 import scala.util.Random
 
-class Enemy(r: Int) extends Citizen {
+class Enemy(r: Int, worldWidth: Int, worldHeight: Int) extends Citizen {
 
   val halfWidth: Int = r
   val halfLength: Int = r
 
-  var x: Int = Random.nextInt(500)
+  var x: Int = Random.nextInt(worldWidth)
   var y: Int = 0
 
   var vx: Int = 0
   var vy: Int = 1 + Random.nextInt(15) // going down
 
-  def expired(): Boolean = {
-    x < 0 || y < 0 || x > 500 || y > 500
+  override def expired(): Boolean = {
+    x < 0 || y < 0 || x > worldWidth || y > worldHeight
   }
 
   def render(g: dom.CanvasRenderingContext2D): Unit = {

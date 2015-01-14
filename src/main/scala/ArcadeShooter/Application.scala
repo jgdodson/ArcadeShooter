@@ -17,15 +17,14 @@ object Application {
   @JSExport
   def main(canvas: dom.HTMLCanvasElement): Unit = {
 
-    //dom.alert("Single Shot: W\n" + "TripleShot: E\n" + "Shockwave: Q")
-
     // DONE: provide the world class with methods for adding citizens. This
     // will make it easier to inform the citizens of certain world-properties.
 
-    val world: World = new World(canvas, 500, 500)
+    val world: World = new World(canvas, 1000, 600)
     world.addShooter()
+    world.addGenerator(30)
 
-    world.bigBang()
+    world.bigBang(20)
 
 
   }

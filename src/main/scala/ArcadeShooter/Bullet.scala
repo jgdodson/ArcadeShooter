@@ -6,13 +6,15 @@ class Bullet(var x: Int,
              var y: Int,
              var vx: Int,
              var vy: Int,
-             r: Int) extends Citizen {
+             r: Int,
+             worldWidth: Int,
+             worldHeight: Int) extends Citizen {
 
   val halfLength: Int = r
   val halfWidth: Int = r
 
-  def expired(): Boolean = {
-    (x < 0) || (y < 0) || (x > 500) || (y > 500)
+  override def expired(): Boolean = {
+    (x < 0) || (y < 0) || (x > worldWidth) || (y > worldHeight)
   }
 
   def render(g: dom.CanvasRenderingContext2D): Unit = {

@@ -22,7 +22,7 @@ trait Citizen {
   def vx: Int
   def vy: Int
 
-  def expired(): Boolean
+  def expired(): Boolean = false
 
   def render(g: dom.CanvasRenderingContext2D): Unit
 
