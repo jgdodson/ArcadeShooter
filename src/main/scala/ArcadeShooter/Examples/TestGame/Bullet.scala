@@ -1,5 +1,6 @@
-package ArcadeShooter
+package ArcadeShooter.Examples.TestGame
 
+import ArcadeShooter.Library.Projectile
 import org.scalajs.dom
 
 class Bullet(var x: Int,
@@ -8,10 +9,12 @@ class Bullet(var x: Int,
              var vy: Int,
              r: Int,
              worldWidth: Int,
-             worldHeight: Int) extends Citizen {
+             worldHeight: Int) extends Projectile(worldWidth, worldHeight) {
 
-  val halfLength: Int = r
+  val halfHeight: Int = r
   val halfWidth: Int = r
+
+  def spawn() = Nil
 
   override def expired(): Boolean = {
     (x < 0) || (y < 0) || (x > worldWidth) || (y > worldHeight)

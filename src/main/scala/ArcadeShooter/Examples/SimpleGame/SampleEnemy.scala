@@ -1,12 +1,14 @@
-package ArcadeShooter
+package ArcadeShooter.Examples.SimpleGame
 
+import ArcadeShooter.Library.Enemy
 import org.scalajs.dom
+
 import scala.util.Random
 
-class Enemy(r: Int, worldWidth: Int, worldHeight: Int) extends Citizen {
+class SampleEnemy(r: Int, worldWidth: Int, worldHeight: Int) extends Enemy(worldWidth, worldHeight) {
 
   val halfWidth: Int = r
-  val halfLength: Int = r
+  val halfHeight: Int = r
 
   var x: Int = Random.nextInt(worldWidth)
   var y: Int = 0
@@ -14,9 +16,7 @@ class Enemy(r: Int, worldWidth: Int, worldHeight: Int) extends Citizen {
   var vx: Int = 0
   var vy: Int = 1 + Random.nextInt(15) // going down
 
-  override def expired(): Boolean = {
-    x < 0 || y < 0 || x > worldWidth || y > worldHeight
-  }
+  def spawn() = Nil
 
   def render(g: dom.CanvasRenderingContext2D): Unit = {
 
@@ -25,9 +25,9 @@ class Enemy(r: Int, worldWidth: Int, worldHeight: Int) extends Citizen {
     g.strokeStyle = "silver"
 
     g.beginPath()
-    g.moveTo(x - halfWidth,y - halfLength)
+    g.moveTo(x - halfWidth,y - halfHeight)
     g.lineTo(x,y + halfWidth)
-    g.lineTo(x + halfWidth, y - halfLength)
+    g.lineTo(x + halfWidth, y - halfHeight)
     g.closePath()
 
     g.fill()

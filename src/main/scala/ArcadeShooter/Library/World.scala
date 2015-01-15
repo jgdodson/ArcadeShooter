@@ -1,4 +1,4 @@
-package ArcadeShooter
+package ArcadeShooter.Library
 
 import org.scalajs.dom
 
@@ -16,7 +16,7 @@ import org.scalajs.dom
 //  a render and update method that the background will call (or these could just be
 //  added directly to the world if we desired these remnants to interact with other citizens.)
 
-class World(worldCanvas: dom.HTMLCanvasElement, worldWidth: Int, worldHeight: Int) {
+class World(val worldCanvas: dom.HTMLCanvasElement, worldWidth: Int, worldHeight: Int) {
 
   // Setup the Canvas
   worldCanvas.tabIndex = 0
@@ -26,59 +26,45 @@ class World(worldCanvas: dom.HTMLCanvasElement, worldWidth: Int, worldHeight: In
   worldCanvas.height = worldHeight
 
   // Setup key-controls for the canvas.
-  worldCanvas.onkeydown = (e: dom.KeyboardEvent) => e.keyCode match {
-    // moving left/right
-    case 37 => shooters.map(s => s.startMovingLeft())
-    case 39 => shooters.map(s => s.startMovingRight())
-
-    // shooting commands
-    case 87 => shooters.map(s => s.fireSingle())
-    case 69 => shooters.map(s => s.fireTriple())
-    case 81 => shooters.map(s => s.shockWave())
-  }
-
-  worldCanvas.onkeyup = (e: dom.KeyboardEvent) => e.keyCode match {
-    // moving left/right
-    case 37 => shooters.map(s => s.stopMovingLeft())
-    case 39 => shooters.map(s => s.stopMovingRight())
-  }
+  worldCanvas.onkeydown = (e: dom.KeyboardEvent) => shooters.map(s => s.onKeyDown(e))
+  worldCanvas.onkeyup = (e: dom.KeyboardEvent) => shooters.map(s => s.onKeyUp(e))
 
 
   private val worldCTX = worldCanvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
 
   private var generators: List[Generator] = Nil
   private var shooters: List[Shooter] = Nil
-  private var bullets: List[Bullet] = Nil
+  private var projectiles: List[Projectile] = Nil
   private var enemies: List[Enemy] = Nil
 
   // Introduces a new Enemy to the world.
-  def addEnemy(r: Int): Unit = {
-    enemies = new Enemy(r, worldWidth, worldHeight) :: enemies
+  def addEnemy(e: Enemy): Unit = {
+    enemies = e :: enemies
   }
 
   // Introduces a new Shooter to the world.
-  def addShooter(): Unit = {
-    shooters = new Shooter(worldWidth, worldHeight) :: shooters
+  def addShooter(s: Shooter): Unit = {
+    shooters = s :: shooters
   }
 
-  def addGenerator(freq: Int): Unit = {
-    generators = new Generator(freq, worldWidth, worldHeight) :: generators
+  def addGenerator(g: Generator): Unit = {
+    generators = g :: generators
   }
 
 
-  // Allows a single bullet to kill multiple enemies and
-  // (in future?) multiple bullets to kill a single enemy.
-  private def CheckCollisions(bs: List[Bullet], es: List[Enemy]): (List[Bullet], List[Enemy]) = {
+  // Allows a single Projectile to kill multiple enemies and
+  // (in future?) multiple Projectiles to kill a single enemy.
+  private def CheckCollisions(bs: List[Projectile], es: List[Enemy]): (List[Projectile], List[Enemy]) = {
 
-    // Checks one bullet against a list of enemies.
-    def loop1(b: Bullet, es: List[Enemy]): (List[Bullet], List[Enemy]) = {
+    // Checks one Projectile against a list of enemies.
+    def loop1(b: Projectile, es: List[Enemy]): (List[Projectile], List[Enemy]) = {
       val (hits, misses) = es partition { enemy => b isNear enemy}
       if (hits.isEmpty) (List(b), misses)
       else (Nil, misses)
     }
 
-    // Calls loop1 for all bullets.
-    def loop2(bs: List[Bullet], e: List[Enemy], remainingBul: List[Bullet]): (List[Bullet], List[Enemy]) = bs match {
+    // Calls loop1 for all Projectiles.
+    def loop2(bs: List[Projectile], e: List[Enemy], remainingBul: List[Projectile]): (List[Projectile], List[Enemy]) = bs match {
       case fb :: rest =>
         val (b, es) = loop1(fb, e)
         loop2(rest, es, b ::: remainingBul)
@@ -89,15 +75,17 @@ class World(worldCanvas: dom.HTMLCanvasElement, worldWidth: Int, worldHeight: In
     loop2(bs, es, Nil)
   }
 
+  // TODO: Remove this hack for background color
   private def render(): Unit = {
 
-    worldCTX.clearRect(0, 0, worldWidth, worldHeight)
+    worldCTX.fillStyle = "black"
+    worldCTX.fillRect(0, 0, worldWidth, worldHeight)
 
     // Render the enemies
     for (e <- enemies) e.render(worldCTX)
 
-    // Render the bullets.
-    for (b <- bullets) b.render(worldCTX)
+    // Render the Projectiles.
+    for (p <- projectiles) p.render(worldCTX)
 
     // Render the shooters last (always on top).
     for (s <- shooters) s.render(worldCTX)
@@ -115,13 +103,13 @@ class World(worldCanvas: dom.HTMLCanvasElement, worldWidth: Int, worldHeight: In
     // Firstly, handle the collisions.
     // If handled last, after the updates, the collisions would
     // appear to happen a frame before they actually do.
-    val p = CheckCollisions(bullets, enemies)
-    bullets = p._1
+    val p = CheckCollisions(projectiles, enemies)
+    projectiles = p._1
     enemies = p._2
 
-    // Update the bullets
-    for (b <- bullets) b.update()
-    bullets = bullets.filter(x => !x.expired())
+    // Update the Projectiles
+    for (b <- projectiles) b.update()
+    projectiles = projectiles.filter(x => !x.expired())
 
     // Update the enemies.
     for (e <- enemies) e.update()
@@ -129,11 +117,10 @@ class World(worldCanvas: dom.HTMLCanvasElement, worldWidth: Int, worldHeight: In
     // Update the shooters.
     for (s <- shooters) {
       s.update()
-      bullets = s.spawn() ::: bullets
+      projectiles = s.spawn() ::: projectiles
     }
 
     for (g <- generators) enemies = g.spawn() ::: enemies
-
   }
 
   def bigBang(t: Int): Unit = {

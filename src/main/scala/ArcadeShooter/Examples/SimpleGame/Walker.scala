@@ -1,21 +1,24 @@
-package ArcadeShooter
+package ArcadeShooter.Examples.SimpleGame
 
+import ArcadeShooter.Library.Shooter
 import org.scalajs.dom
 
 // For arcade-style games. (i.e. Galaga)
 // A walker is a user-controlled agent that walks across the bottom of the canvas.
-class Walker(_pace: Int, val halfLength: Int, val halfWidth: Int, val worldWidth: Int, val worldHeight: Int) extends Citizen {
+class Walker(_pace: Int, val halfHeight: Int, val halfWidth: Int, worldWidth: Int, worldHeight: Int) extends Shooter(worldWidth, worldHeight) {
+
+  var numShotsFired = 0
 
   // Pace of the walker, that is, the velocity when walking left or right.
   val pace: Int = math.abs(_pace)
 
   // Position
   var x: Int = worldWidth / 2
-  var y: Int = worldHeight - (halfLength)
+  var y: Int = worldHeight - (halfHeight)
 
   // Velocity
   var vx: Int = 0
-  val vy: Int = 0
+  var vy: Int = 0
 
   // Flags indicating the current state of the Walker.
   var movingRight: Boolean = false
@@ -78,11 +81,66 @@ class Walker(_pace: Int, val halfLength: Int, val halfWidth: Int, val worldWidth
     x += vx
   }
 
+  def onKeyDown(e: dom.KeyboardEvent): Unit = e.keyCode match {
+    // moving left/right
+    case 37 => startMovingLeft()
+    case 39 => startMovingRight()
+
+    // shooting commands
+    case 87 => fireSingle()
+    case 69 => fireTriple()
+    case 81 => shockWave()
+  }
+
+  def onKeyUp(e: dom.KeyboardEvent): Unit = e.keyCode match {
+    // moving left/right
+    case 37 => stopMovingLeft()
+    case 39 => stopMovingRight()
+  }
+
   def render(g: dom.CanvasRenderingContext2D): Unit = {
     g.beginPath()
     g.fillStyle = "black"
-    g.fillRect(x - halfWidth, y - halfLength, 2 * halfWidth, 2 * halfLength)
+    g.fillRect(x - halfWidth, y - halfHeight, 2 * halfWidth, 2 * halfHeight)
+  }
 
+  def fireSingle(): Unit = {
+    nextShot = 1
+  }
+
+  def fireTriple(): Unit = {
+    nextShot = 2
+  }
+
+  def shockWave(): Unit = {
+    nextShot = 3
+  }
+
+  override def spawn(): List[Bullet] = {
+
+    // We will match on the current state of the nextShot flag.
+    val toShoot = nextShot
+
+    // Always reset for the next update.
+    nextShot = 0
+
+    toShoot match {
+      case 1 =>
+        numShotsFired += 1
+        List(new Bullet(x, y - halfHeight, 0, -10, 5, worldWidth, worldHeight))
+
+      case 2 =>
+        numShotsFired += 3
+        for (i <- List.range(-2, 4, 2)) yield new Bullet(x, y - halfHeight, i, -10, 5, worldWidth, worldHeight)
+
+      case 3 =>
+        numShotsFired += 20
+        for (i <- List.range(0, 21)) yield new Bullet(x, y + halfHeight,
+          (250 * math.cos((i / 20.0) * math.Pi)).toInt / 15,
+          -(250 * math.sin((i / 20.0) * math.Pi)).toInt / 15, 5, worldWidth, worldHeight)
+
+      case _ => Nil
+    }
   }
 }
 
